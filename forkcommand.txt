@@ -1,0 +1,153 @@
+----------------------------------------
+Fork, Vfork, Exec and Family Cheat Sheet
+----------------------------------------
+
+1. **fork()**
+   - **Description**: Creates a new process by duplicating the calling process.
+   - **Returns**:
+     - `0` in the child process.
+     - Process ID (PID) of the child in the parent process.
+   - **Usage**:
+     - `fork()` is used to create a child process that runs concurrently with the parent process.
+     - The child process is a copy of the parent process, but has a unique PID.
+   - **Example**:
+
+     #include <iostream>
+     #include <unistd.h>
+
+     int main() {
+         pid_t pid = fork();  // Create a new process
+
+         if (pid == 0) {
+             // This block is executed by the child process
+             std::cout << "Child process. PID: " << getpid() << ", Parent PID: " << getppid() << std::endl;
+         } else if (pid > 0) {
+             // This block is executed by the parent process
+             std::cout << "Parent process. PID: " << getpid() << ", Child PID: " << pid << std::endl;
+         } else {
+             // Error case: fork() failed
+             std::cerr << "Fork failed!" << std::endl;
+         }
+
+         return 0;
+     }
+
+2. **vfork()**
+   - **Description**: Similar to `fork()`, but the child process is executed before the parent process continues.
+   - **Difference**: `vfork()` is optimized to be faster than `fork()`. It doesn't duplicate the address space immediately but suspends the parent until the child terminates or calls `exec()`.
+   - **Returns**:
+     - `0` in the child process.
+     - PID of the child in the parent process.
+   - **Warning**: The child process should either call `exec()` or `_exit()` immediately after a `vfork()`, because the parent process will remain suspended until the child terminates.
+   - **Usage**:
+     - Ideal for situations where the child process immediately replaces itself using `exec()` (to avoid unnecessary copying of resources).
+   - **Example**:
+
+     #include <iostream>
+     #include <unistd.h>
+
+     int main() {
+         pid_t pid = vfork();  // Create a new process (similar to fork, but faster)
+
+         if (pid == 0) {
+             // This block is executed by the child process
+             std::cout << "Child process (vfork). PID: " << getpid() << std::endl;
+             _exit(0);  // Terminate child process immediately after vfork
+         } else if (pid > 0) {
+             // This block is executed by the parent process
+             std::cout << "Parent process (vfork). PID: " << getpid() << ", Child PID: " << pid << std::endl;
+         } else {
+             std::cerr << "vfork() failed!" << std::endl;
+         }
+
+         return 0;
+     }
+
+3. **exec() and Exec Family**
+   - **Description**: The `exec()` family of functions replaces the current process with a new process image. It loads a new program into the current process, effectively replacing the current program.
+   - **Variants**: 
+     - `execvp()`, `execve()`, `execv()`, `execlp()`, etc. 
+     - These variations differ in how they pass arguments and how they search for the executable.
+   
+   **Common Exec Family Functions**:
+   - **execvp()**: Executes a program using the `PATH` environment variable.
+   - **execv()**: Executes a program, passing a vector of arguments (does not search `PATH`).
+   - **execve()**: Executes a program, passing the environment and argument list.
+   - **execlp()**: Executes a program, passing a list of arguments and searching `PATH`.
+
+   **Returns**:
+   - On success: Does not return to the calling process.
+   - On failure: Returns `-1`, and `errno` is set.
+
+   **Usage**:
+   - `exec()` is commonly used after `fork()` to replace the child process with a new program (e.g., `ls`, `cat`, etc.).
+
+   **Example**:
+
+   #include <iostream>
+   #include <unistd.h>
+
+   int main() {
+       pid_t pid = fork();  // Create a child process
+
+       if (pid == 0) {
+           // This block is executed by the child process
+           std::cout << "Child process before exec." << std::endl;
+           execlp("/bin/ls", "ls", "-l", NULL);  // Replace the child process with "ls -l"
+           // If exec fails:
+           std::cerr << "Exec failed!" << std::endl;
+       } else if (pid > 0) {
+           // This block is executed by the parent process
+           std::cout << "Parent process. PID: " << getpid() << ", Child PID: " << pid << std::endl;
+       } else {
+           std::cerr << "Fork failed!" << std::endl;
+       }
+
+       return 0;
+   }
+
+4. **wait() and waitpid()**
+   - **Description**: Used by the parent process to wait for the termination of a child process.
+   - **wait()**: Blocks the parent until any child process terminates.
+   - **waitpid()**: Blocks until the specific child process terminates. Can be used to handle multiple children.
+   - **Usage**:
+     - After `fork()`, the parent should often call `wait()` or `waitpid()` to avoid creating a **zombie process** (a terminated child whose exit status hasn't been collected).
+
+   **Example**:
+
+   #include <iostream>
+   #include <unistd.h>
+   #include <sys/wait.h>
+
+   int main() {
+       pid_t pid = fork();
+
+       if (pid == 0) {
+           // Child process
+           std::cout << "Child process. PID: " << getpid() << std::endl;
+           _exit(0);  // Exit child process
+       } else if (pid > 0) {
+           // Parent process
+           int status;
+           waitpid(pid, &status, 0);  // Wait for child to terminate
+           std::cout << "Parent process. Child terminated with status: " << status << std::endl;
+       } else {
+           std::cerr << "Fork failed!" << std::endl;
+       }
+
+       return 0;
+   }
+
+5. **Key Points to Remember**
+   - **fork()**: Creates a new process (parent and child).
+   - **vfork()**: Creates a child process but suspends the parent until the child terminates or calls `exec()`.
+   - **exec() family**: Replaces the current process with a new one. This is used to execute different programs in a child process.
+   - **wait() and waitpid()**: Used by the parent to wait for the child process to terminate, preventing zombie processes.
+
+6. **Common Errors**
+   - **fork() failure**: If `fork()` fails, it returns `-1`, and no child process is created.
+   - **exec() failure**: If `exec()` fails, it returns `-1`, and `errno` is set. Make sure the executable file exists and is executable.
+   - **Zombie Processes**: If a parent does not call `wait()` or `waitpid()` after the child terminates, the child becomes a zombie (its PID still exists until the parent collects its exit status).
+
+----------------------------------------
+

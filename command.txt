@@ -1,0 +1,213 @@
+------------------------
+Linux Basics Cheat Sheet
+------------------------
+
+1. **File & Directory Management**
+
+- List files in a directory:
+  ls
+  ls -l          # Detailed listing (permissions, owner, size, etc.)
+  ls -a          # List all files, including hidden files
+
+- Change directory:
+  cd /path/to/directory   # Change to a specific directory
+  cd ..                   # Go up one directory
+  cd ~                    # Go to home directory
+
+- Create a new directory:
+  mkdir new_directory
+
+- Remove a directory (only if empty):
+  rmdir directory_name
+
+- Remove a directory with all its contents:
+  rm -rf directory_name
+
+- Create a new file:
+  touch filename.txt
+
+- Delete a file:
+  rm filename.txt
+
+2. **File Permissions**
+
+- View file permissions:
+  ls -l filename.txt
+
+- Change file permissions:
+  chmod 755 filename.txt    # rwx for owner, rx for group, rx for others
+
+- Change file ownership:
+  chown user:group filename.txt
+
+3. **Text File Editing**
+
+- Edit a file using `nano`:
+  nano filename.txt
+
+- Edit a file using `vim`:
+  vim filename.txt
+
+- View a file using `cat`:
+  cat filename.txt
+
+- View file contents with paging:
+  less filename.txt
+  more filename.txt
+
+4. **Process Management**
+
+- View running processes:
+  ps aux
+
+- Kill a process by PID:
+  kill <PID>
+
+- View processes in real time:
+  top
+
+- Stop a process:
+  kill -9 <PID>
+
+5. **System Monitoring**
+
+- Disk usage:
+  df -h                    # Shows disk space usage in human-readable format
+
+- Memory usage:
+  free -h                  # Shows memory usage
+
+- System uptime:
+  uptime
+
+- Current date and time:
+  date
+
+6. **Package Management (Debian-based)**
+
+- Update package list:
+  sudo apt update
+
+- Upgrade installed packages:
+  sudo apt upgrade
+
+- Install a package:
+  sudo apt install <package_name>
+
+- Remove a package:
+  sudo apt remove <package_name>
+
+---------------------------
+Static & Dynamic Libraries
+---------------------------
+
+1. **Static Libraries (Linux)**
+
+- Write the library code (e.g., `mylib.cpp`):
+  #include <iostream>
+  void hello() {
+      std::cout << "Hello from static library!" << std::endl;
+  }
+
+- Compile the object file:
+  g++ -c mylib.cpp -o mylib.o
+
+- Create the static library:
+  ar rcs libmylib.a mylib.o
+
+- Write the main program (e.g., `main.cpp`):
+  #include <iostream>
+  void hello(); // Declare the function from the static library
+  int main() {
+      hello();  // Call the function from the static library
+      return 0;
+  }
+
+- Compile and link with the static library:
+  g++ main.cpp -L. -lmylib -o myprogram
+
+- Run the program:
+  ./myprogram
+  # Output: Hello from static library!
+
+2. **Dynamic Libraries (Linux)**
+
+- Write the library code (e.g., `mylib.cpp`):
+  #include <iostream>
+  void hello() {
+      std::cout << "Hello from dynamic library!" << std::endl;
+  }
+
+- Compile the object file with `-fPIC`:
+  g++ -fPIC -c mylib.cpp -o mylib.o
+
+- Create the dynamic library (`.so` file):
+  g++ -shared -o libmylib.so mylib.o
+
+- Write the main program (e.g., `main.cpp`):
+  #include <iostream>
+  void hello(); // Declare the function from the dynamic library
+  int main() {
+      hello();  // Call the function from the dynamic library
+      return 0;
+  }
+
+- Compile and link with the dynamic library:
+  g++ main.cpp -L. -lmylib -o myprogram
+
+- Set the library path and run the program:
+  export LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH
+  ./myprogram
+  # Output: Hello from dynamic library!
+
+---------------------------
+Linux System Utilities
+---------------------------
+
+- **Get the current working directory**:
+  pwd
+
+- **Move or rename a file**:
+  mv oldname.txt newname.txt
+  mv file.txt /path/to/destination/
+
+- **Copy a file**:
+  cp file.txt /path/to/destination/
+
+- **Copy a directory recursively**:
+  cp -r directory/ /path/to/destination/
+
+- **Find files by name**:
+  find /path/to/search -name "filename.txt"
+
+- **Show disk usage**:
+  du -sh directory_name  # Disk usage of a directory
+
+- **Show the disk usage of all files and subdirectories**:
+  du -ah
+
+- **Change the ownership of a file**:
+  sudo chown user:group file.txt
+
+- **Change file permissions**:
+  chmod 755 file.txt
+  # rwx for owner, rx for group, rx for others
+
+- **List all processes**:
+  ps aux
+
+- **Terminate a process by PID**:
+  kill <PID>
+  kill -9 <PID>  # Forcefully terminate the process
+
+- **View the system's memory usage**:
+  free -h
+
+- **View the system's CPU usage**:
+  top  # Shows a real-time list of processes
+
+- **Find a file by name**:
+  find / -name "filename.txt"
+
+-------------------------------
+

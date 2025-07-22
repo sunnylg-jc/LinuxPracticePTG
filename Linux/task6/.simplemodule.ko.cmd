@@ -1,0 +1,1 @@
+savedcmd_simplemodule.ko := ld -r -m elf_x86_64 -z noexecstack --no-warn-rwx-segments --build-id=sha1  -T /usr/src/linux-headers-6.14.0-24-generic/scripts/module.lds -o simplemodule.ko simplemodule.o simplemodule.mod.o .module-common.o

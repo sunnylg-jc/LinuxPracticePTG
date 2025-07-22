@@ -1,0 +1,288 @@
+-------------------------------
+Linux Shell Scripting Cheat Sheet
+-------------------------------
+
+1. **Basic Shell Commands**
+
+- **Display current working directory**:
+  pwd
+
+- **List files in a directory**:
+  ls
+  ls -l          # Detailed listing (permissions, owner, size, etc.)
+  ls -a          # List all files, including hidden files
+
+- **Change directory**:
+  cd /path/to/directory   # Change to a specific directory
+  cd ..                   # Go up one directory
+  cd ~                    # Go to home directory
+
+- **Create a new directory**:
+  mkdir new_directory
+
+- **Remove a directory (only if empty)**:
+  rmdir directory_name
+
+- **Remove a directory with all its contents**:
+  rm -rf directory_name
+
+- **Create a new file**:
+  touch filename.txt
+
+- **Delete a file**:
+  rm filename.txt
+
+2. **Variables and Inputs**
+
+- **Assign a value to a variable**:
+  var="value"
+  
+- **Access the value of a variable**:
+  echo $var
+
+- **Read user input**:
+  read variable_name
+
+- **Prompt and store user input**:
+  read -p "Enter your name: " name
+
+- **Get the script's arguments**:
+  echo $1        # First argument
+  echo $2        # Second argument
+  echo $@        # All arguments
+
+3. **Control Structures**
+
+- **If statement**:
+  if [ condition ]; then
+      # Do something
+  fi
+
+  Example:
+  if [ $var -eq 5 ]; then
+      echo "Var is 5"
+  fi
+
+- **If-else statement**:
+  if [ condition ]; then
+      # Do something
+  else
+      # Do something else
+  fi
+
+  Example:
+  if [ -d "directory" ]; then
+      echo "Directory exists"
+  else
+      echo "Directory does not exist"
+  fi
+
+- **If-elif-else statement**:
+  if [ condition1 ]; then
+      # Do something
+  elif [ condition2 ]; then
+      # Do something else
+  else
+      # Do the default thing
+  fi
+
+- **For loop**:
+  for var in value1 value2 value3; do
+      echo $var
+  done
+
+  Example:
+  for i in {1..5}; do
+      echo "Iteration: $i"
+  done
+
+- **While loop**:
+  while [ condition ]; do
+      # Do something
+  done
+
+  Example:
+  count=1
+  while [ $count -le 5 ]; do
+      echo "Count is $count"
+      ((count++))
+  done
+
+4. **Functions**
+
+- **Defining a function**:
+  function_name() {
+      # Function body
+  }
+
+  Example:
+  greet() {
+      echo "Hello, $1!"
+  }
+
+- **Calling a function**:
+  greet "Alice"
+
+5. **File Operations**
+
+- **Check if a file exists**:
+  if [ -e filename.txt ]; then
+      echo "File exists"
+  fi
+
+- **Check if a file is a directory**:
+  if [ -d directory_name ]; then
+      echo "It's a directory"
+  fi
+
+- **Check if a file is readable**:
+  if [ -r filename.txt ]; then
+      echo "File is readable"
+  fi
+
+- **Check if a file is writable**:
+  if [ -w filename.txt ]; then
+      echo "File is writable"
+  fi
+
+- **Redirect output to a file**:
+  echo "Hello, World!" > output.txt
+
+- **Append output to a file**:
+  echo "New line" >> output.txt
+
+- **Read from a file line by line**:
+  while IFS= read -r line; do
+      echo $line
+  done < filename.txt
+
+6. **String Operations**
+
+- **Concatenate strings**:
+  str1="Hello"
+  str2="World"
+  result="$str1 $str2"
+  echo $result
+
+- **Get the length of a string**:
+  str="Hello"
+  echo ${#str}
+
+- **Substring (get part of a string)**:
+  str="Hello World"
+  echo ${str:6:5}    # Output: World
+
+7. **Working with Arrays**
+
+- **Declare an array**:
+  array=("item1" "item2" "item3")
+
+- **Access an array element**:
+  echo ${array[0]}   # Output: item1
+
+- **Loop through an array**:
+  for item in "${array[@]}"; do
+      echo $item
+  done
+
+8. **Process Management**
+
+- **Run a command in the background**:
+  command &
+
+- **Check running jobs**:
+  jobs
+
+- **Kill a process**:
+  kill <PID>
+
+- **Find a process by name**:
+  pgrep process_name
+
+- **Check process ID (PID)**:
+  echo $$  # PID of the current script
+
+9. **Redirection and Pipelines**
+
+- **Redirect standard output to a file**:
+  echo "Hello" > file.txt
+
+- **Append standard output to a file**:
+  echo "New Line" >> file.txt
+
+- **Redirect standard error to a file**:
+  command 2> error.log
+
+- **Redirect both output and error to a file**:
+  command &> output.log
+
+- **Pipe output of one command to another**:
+  command1 | command2
+
+  Example:
+  ls | grep "file"
+
+10. **File Permissions and Ownership**
+
+- **Change file permissions**:
+  chmod 755 filename.txt  # rwx for owner, rx for group, rx for others
+
+- **Change file owner**:
+  chown user:group filename.txt
+
+11. **Useful Commands in Shell Scripts**
+
+- **Get the current date and time**:
+  date
+
+- **Get the current user**:
+  whoami
+
+- **Get system uptime**:
+  uptime
+
+- **List all running processes**:
+  ps aux
+
+- **Display disk space usage**:
+  df -h
+
+12. **Exit Status and Return Values**
+
+- **Get the exit status of the last command**:
+  echo $?
+
+- **Exit a script with a specific exit code**:
+  exit 1
+
+- **Exit with success status**:
+  exit 0
+
+---------------------------
+Sample Shell Script Example
+---------------------------
+
+#!/bin/bash
+
+# A simple shell script example
+
+# Function to greet
+greet() {
+    echo "Hello, $1!"
+}
+
+# Ask for the user's name
+read -p "Enter your name: " name
+
+# Call the greet function
+greet $name
+
+# Check if a file exists
+if [ -f "sample.txt" ]; then
+    echo "File exists."
+else
+    echo "File does not exist."
+fi
+
+exit 0
+
